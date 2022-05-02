@@ -1,0 +1,22 @@
+{
+  "window": {
+    "width": 1600,
+    "height": 900,
+    "framerate": 75
+  },
+  "grid": {
+    "rows": 32,
+    "columns": 50,
+    "cell_size": 25,
+    "outline": 1
+  },
+  "color": {
+    "background": "gray30",
+    "outline": "black",
+    "empty_cell": "white",
+    "blocked_cell": "darkgray",
+    "start_cell": "orangered",
+    "end_cell": "orangered",
+    "path_cell": "palegreen"
+  }
+}
