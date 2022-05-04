@@ -1,15 +1,9 @@
 import pygame
-from enum import IntEnum
 from itertools import cycle
 from modules.grid import Grid
 from modules.cell import CellType
+from modules.pathfinder import Pathfinder
 from settings import *
-
-
-class PathfinderAlgorithms(IntEnum):
-    BFS = 0
-    A_STAR = 1
-    DIJKSTRA = 2
 
 
 class PathfindingApplication:
@@ -34,26 +28,27 @@ class PathfindingApplication:
         }
 
         self.grid = Grid()
-
         self.point_type_cycle = cycle([CellType.START, CellType.END])
 
-        self.pathfinder_names = ['Breadth-First Search', 'A-Star', 'Dijkstra\'s algorithm']
-        self.current_pathfinder = PathfinderAlgorithms.BFS
+        self.pathfinder = Pathfinder(self.grid)
+        self.pathfinder_algorithm_cycle = cycle(self.pathfinder.algorithms)
+        self.pathfinder.current_algorithm = next(self.pathfinder_algorithm_cycle)
+        pygame.display.set_caption(f'Pathfinding: {self.pathfinder.current_algorithm}')
 
-        pygame.display.set_caption(f'Pathfinding: {self.pathfinder_names[self.current_pathfinder]}')
+    def select_point(self, cell_index, point_type):
+        if point_type == CellType.START:
+            start_cell = self.grid.get_start_cell()
+            if start_cell != cell_index:
+                if start_cell is not None:
+                    self.grid.cells[start_cell].cell_type = CellType.EMPTY
+                self.grid.cells[cell_index].cell_type = CellType.START
 
-    def bfs_pathfinder(self): pass
-
-    def a_star_pathfinder(self): pass
-
-    def dijkstra_pathfinder(self): pass
-
-    def select_point(self, cell_point_index, point_type):
-        for index, cell in enumerate(self.grid.cells):
-            if cell.cell_type == point_type and index != cell_point_index:
-                cell.cell_type = CellType.EMPTY
-
-        self.grid.cells[cell_point_index].cell_type = point_type
+        if point_type == CellType.END:
+            end_cell = self.grid.get_end_cell()
+            if end_cell != cell_index:
+                if end_cell is not None:
+                    self.grid.cells[end_cell].cell_type = CellType.EMPTY
+                self.grid.cells[cell_index].cell_type = CellType.END
 
     def poll_events(self):
         for event in pygame.event.get():
@@ -119,29 +114,29 @@ class PathfindingApplication:
             self.actions['RESET_GRID'] = False
 
         if self.actions['SELECT_PATHFINDER']:
-            if self.current_pathfinder == PathfinderAlgorithms.BFS:
-                self.current_pathfinder = PathfinderAlgorithms.A_STAR
-            elif self.current_pathfinder == PathfinderAlgorithms.A_STAR:
-                self.current_pathfinder = PathfinderAlgorithms.DIJKSTRA
-            elif self.current_pathfinder == PathfinderAlgorithms.DIJKSTRA:
-                self.current_pathfinder = PathfinderAlgorithms.BFS
-
-            pygame.display.set_caption(f'Pathfinding: {self.pathfinder_names[self.current_pathfinder]}')
+            self.pathfinder.current_algorithm = next(self.pathfinder_algorithm_cycle)
+            pygame.display.set_caption(f'Pathfinding: {self.pathfinder.current_algorithm}')
             self.actions['SELECT_PATHFINDER'] = False
 
         if self.actions['START_PATHFINDING']:
-            if self.current_pathfinder == PathfinderAlgorithms.BFS:
-                self.bfs_pathfinder()
-            if self.current_pathfinder == PathfinderAlgorithms.A_STAR:
-                self.a_star_pathfinder()
-            if self.current_pathfinder == PathfinderAlgorithms.DIJKSTRA:
-                self.dijkstra_pathfinder()
+            start_cell = self.grid.get_start_cell()
+            end_cell = self.grid.get_end_cell()
 
-            self.actions['START_PATHFINDING'] = False
+            if start_cell is not None and end_cell is not None:
+                if start_cell == end_cell:
+                    self.actions['START_PATHFINDING'] = False
+                else:
+                    self.pathfinder.update_path()
 
     def draw(self):
         self.grid.draw(self.main_surface)
+
+        if self.actions['START_PATHFINDING']:
+            self.pathfinder.draw_path(self.main_surface)
+            self.actions['START_PATHFINDING'] = False
+
         self.window.blit(self.main_surface, (0, 0))
+
         pygame.display.update()
 
     def run(self):
