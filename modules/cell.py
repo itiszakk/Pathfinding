@@ -9,6 +9,7 @@ class CellType(IntEnum):
     START = 2
     END = 3
     PATH = 4
+    VISITED = 5
 
 
 class Cell:
@@ -45,6 +46,8 @@ class Cell:
             self.set_fill_color(END_CELL_COLOR)
         if self.cell_type == CellType.PATH:
             self.set_fill_color(PATH_CELL_COLOR)
+        if self.cell_type == CellType.VISITED:
+            self.set_fill_color(VISITED_CELL_COLOR)
 
     def draw(self, surface):
         surface.blit(self.outline_surface, self.outline_rect.topleft)

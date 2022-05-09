@@ -66,6 +66,11 @@ class Grid:
 
         surface.blit(self.grid_surface, self.grid_surface.get_rect())
 
+    def clear_path(self):
+        for cell in self.cells:
+            if cell.cell_type == CellType.PATH or cell.cell_type == CellType.VISITED:
+                cell.cell_type = CellType.EMPTY
+
     def reset(self):
         for cell in self.cells:
             cell.cell_type = CellType.EMPTY
