@@ -3,10 +3,11 @@ GRID_COLUMNS = 50
 CELL_SIZE = 25
 CELL_OUTLINE = 1
 
-BACKGROUND_COLOR = 'gray30'
+BACKGROUND_COLOR = 'black'
 OUTLINE_COLOR = 'black'
 EMPTY_CELL_COLOR = 'white'
 BLOCKED_CELL_COLOR = 'darkgray'
-START_CELL_COLOR = 'orangered'
+START_CELL_COLOR = 'deepskyblue'
 END_CELL_COLOR = 'orangered'
 PATH_CELL_COLOR = 'palegreen'
+VISITED_CELL_COLOR = 'pink'
